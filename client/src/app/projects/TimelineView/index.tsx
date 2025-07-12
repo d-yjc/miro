@@ -32,9 +32,6 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
       viewMode: event.target.value as ViewMode,
     }));
   };
-  if (isLoading) return <div>Loading...</div>;
-  if (error)
-    return <div> An error occurred while attempting to fetch tasks...</div>;
 
   const ganttTasks = useMemo(() => {
     return (
@@ -49,6 +46,10 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
       })) || []
     );
   }, [tasks]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error)
+    return <div> An error occurred while attempting to fetch tasks...</div>;
 
   return (
     <div className="px-4 xl:px-6">
@@ -68,27 +69,28 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
           </select>
         </div>
       </div>
-      <div className="overflow-hidden rounded-md bg-white shadow dark:bg-dark-secondary dark:text-white">
+      <div className="dark:bg-dark-secondary overflow-hidden rounded-md bg-white shadow dark:text-white">
         <div className="timeline">
-            <Gantt
+          <Gantt
             tasks={ganttTasks}
             {...displayOptions}
             columnWidth={displayOptions.viewMode === ViewMode.Month ? 150 : 100}
             listCellWidth="100px"
             barBackgroundColor={isDarkMode ? "#101214" : "#aeb8c2"}
             barBackgroundSelectedColor={isDarkMode ? "#000" : "#9ba1a6"}
-        />
+          />
         </div>
-        <div className="px-4 pb-5 pt-1">
-            <button className="flex items-center rounded bg-blue-primary px-3 py-2 text-white hover:bg-blue-600"
+        <div className="px-4 pt-1 pb-5">
+          <button
+            className="bg-blue-primary flex items-center rounded px-3 py-2 text-white hover:bg-blue-600"
             onClick={() => setIsModalNewTaskOpen(true)}
-            >
-                New Task
-            </button>
+          >
+            New Task
+          </button>
         </div>
       </div>
     </div>
   );
-};  
+};
 
 export default Timeline;

@@ -2,7 +2,6 @@ import Modal from "@/components/Modal";
 import {
   Priority,
   Status,
-  useCreateProjectMutation,
   useCreateTaskMutation,
 } from "@/state/api";
 import React, { useState } from "react";
