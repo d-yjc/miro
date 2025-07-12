@@ -1,5 +1,6 @@
 "use client";
 
+import AuthProvider from "./authProvider";
 import React, { useEffect } from "react";
 import NavBar from "@/components/NavBar";
 import SideBar from "@/components/SideBar";
@@ -37,7 +38,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
+      <AuthProvider>
       <DashboardLayout>{children}</DashboardLayout>
+      </AuthProvider>
     </StoreProvider>
   );
 };
