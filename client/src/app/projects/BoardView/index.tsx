@@ -1,11 +1,15 @@
 import { useGetTasksQuery, useUpdateTaskStatusMutation } from "@/state/api";
 import React from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { DragSourceMonitor, DropTargetMonitor, DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Task as TaskType } from "@/state/api";
 import { EllipsisVertical, MessageSquareMore, PlusIcon } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
+
+interface DragItem {
+  id: number;
+}
 
 type BoardProps = {
   id: string;
@@ -57,17 +61,19 @@ const TaskColumn = ({
   moveTask,
   setIsModalNewTaskOpen,
 }: TaskColumnProps) => {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: "task",
-    drop: (item: { id: number }) => moveTask(item.id, status),
-    collect: (monitor: any) => ({
-      isOver: !!monitor.isOver(),
+  const [{ isOver }, drop] = useDrop<DragItem, void, { isOver: boolean }>(
+    () => ({
+      accept: "task",
+      drop: (item) => moveTask(item.id, status),
+      collect: (monitor: DropTargetMonitor) => ({
+        isOver: monitor.isOver(),
+      }),
     }),
-  }));
+  );
 
   const tasksCount = tasks.filter((task) => task.status === status).length;
 
-  const statusColor: any = {
+  const statusColor: Record<string, string> = {
     "To Do": "#2563EB",
     "Work In Progress": "#059669",
     "Under Review": "#D97706",
@@ -123,11 +129,15 @@ type TaskProps = {
 };
 
 const Task = ({ task }: TaskProps) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag<
+    DragItem,
+    void,
+    { isDragging: boolean }
+  >(() => ({
     type: "task",
     item: { id: task.id },
-    collect: (monitor: any) => ({
-      isDragging: !!monitor.isDragging(),
+    collect: (monitor: DragSourceMonitor) => ({
+      isDragging: monitor.isDragging(),
     }),
   }));
 
@@ -240,9 +250,9 @@ const Task = ({ task }: TaskProps) => {
             )}
           </div>
           <div className="flex items-center text-gray-500 dark:text-neutral-500">
-            <MessageSquareMore size={20}/>
+            <MessageSquareMore size={20} />
             <span className="ml-1 text-sm dark:text-neutral-400">
-                {numberOfComments}
+              {numberOfComments}
             </span>
           </div>
         </div>

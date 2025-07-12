@@ -3,7 +3,6 @@
 import { useSearchQuery } from "@/state/api";
 import React, { useEffect, useState } from "react";
 import { debounce } from "lodash";
-import Head from "next/head";
 import Header from "@/components/Header";
 import TaskCard from "@/components/TaskCard";
 import ProjectCard from "@/components/ProjectCard";

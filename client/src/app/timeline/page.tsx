@@ -18,6 +18,19 @@ const Timeline = () => {
     locale: "en",
   });
 
+  const ganttTasks = useMemo(() => {
+    if (!projects) return [];
+    return projects.map((project) => ({
+      start: new Date(project.startDate as string),
+      end: new Date(project.endDate as string),
+      name: project.name,
+      id: `Project-${project.id}`,
+      type: "project" as TaskTypeItems,
+      progress: 45,
+      isDisabled: false,
+    }));
+  }, [projects]);
+
   const handleViewModeChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
@@ -29,20 +42,6 @@ const Timeline = () => {
   if (isLoading) return <div>Loading...</div>;
   if (isError || !projects)
     return <div> An error occurred while attempting to fetch projects...</div>;
-
-  const ganttTasks = useMemo(() => {
-    return (
-      projects?.map((project) => ({
-        start: new Date(project.startDate as string),
-        end: new Date(project.endDate as string),
-        name: project.name,
-        id: `Project-${project.id}`,
-        type: "project" as TaskTypeItems,
-        progress: 45,
-        isDisabled: false,
-      })) || []
-    );
-  }, [projects]);
 
   return (
     <div className="max-w-full p-8">
@@ -72,7 +71,6 @@ const Timeline = () => {
             projectProgressSelectedColor={isDarkMode ? "#000" : "9ba1a6"}
           />
         </div>
- 
       </div>
     </div>
   );
