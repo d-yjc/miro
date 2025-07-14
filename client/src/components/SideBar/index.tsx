@@ -2,7 +2,8 @@
 
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { setIsSidebarCollapsed } from "@/state";
-import { useGetProjectsQuery } from "@/state/api";
+import { useGetAuthUserQuery, useGetProjectsQuery } from "@/state/api";
+import { signOut } from "aws-amplify/auth";
 import {
   AlertCircle,
   AlertOctagon,
@@ -38,6 +39,19 @@ const SideBar = () => {
     (state) => state.global.isSidebarCollapsed,
   );
 
+  const { data: currentUser } = useGetAuthUserQuery({}); //data from user!
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error occurred while attempting to sign out:", error);
+    }
+  };
+  if (!currentUser) {
+    return null;
+  }
+  const currentUserDetails = currentUser?.userDetails;
+
   const sidebarClass = `fixed flex flex-col h-full justify-between shadow-xl
     transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white 
     ${isSidebarCollapsed ? "w-0 hidden" : "w-64"}`;
@@ -62,7 +76,12 @@ const SideBar = () => {
         </div>
         {/*team*/}
         <div className="flex items-center gap-5 border-y-[1.5px] border-gray-200 px-8 py-4 dark:border-gray-700">
-          <Image src="https://miro-s3-images.s3.us-east-1.amazonaws.com/logo.png" alt="Logo" width={40} height={40} />
+          <Image
+            src="https://miro-s3-images.s3.us-east-1.amazonaws.com/logo.png"
+            alt="Logo"
+            width={40}
+            height={40}
+          />
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-gray-200">
               MIRO TEAM
@@ -140,6 +159,34 @@ const SideBar = () => {
             />
           </>
         )}
+      </div>
+      <div>
+        <div className="z-10 mt-32 flex w-full flex-col items-center gap-4 bg-white px-8 py-4 md:hidden dark:bg-black">
+          <div className="flex w-full items-center">
+            <div className="align-center flex size-9 justify-center">
+              {!!currentUserDetails?.profilePictureUrl ? (
+                <Image
+                  src={`https://miro-s3-images.s3.us-east-1.amazonaws.com/${currentUserDetails?.profilePictureUrl}`}
+                  alt={currentUserDetails?.username || "User Profile Picture"}
+                  width={100}
+                  height={50}
+                  className="h-full rounded-full object-cover"
+                />
+              ) : (
+                <User className="size-6 cursor-pointer self-center rounded-full dark:text-white" />
+              )}
+            </div>
+            <span className="mx-3 text-gray-800 dark:text-white">
+              {currentUserDetails?.username}
+            </span>
+            <button
+              className="text-s self-start rounded bg-blue-400 px-4 py-2 font-bold text-white hover:bg-blue-500 md:block"
+              onClick={handleSignOut}
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
